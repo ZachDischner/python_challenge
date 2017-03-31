@@ -35,6 +35,7 @@ import os
 import sys
 import re
 import utils
+import argparse
 
 ###### Module Wide Objects
 _here = os.path.dirname(os.path.realpath(__file__))
@@ -64,6 +65,19 @@ def ipsearch(searchstring, pattern=_IP_PATTERN):
     return matches
 
 def extract_ips(fname, pattern=_IP_PATTERN, limit=10):
+    """Generator that extracts at most `limit` IP addresses from a file where IPs are identified by regex `pattern`
+
+    Args:
+        fname:      Filename to search through
+    
+    Kwargs:
+        pattern:    Regex pattern that identifies IP addresses
+        limit:      Early termination after this many address have been parsed. handy for testing
+    
+    Example:
+        >>> len([ip for ip in extract_ips("list_of_ips.txt",limit=5)])
+        5
+    """
     extracted = 0
     with open(fname, 'r') as _file:
         for line in _file.readlines():
@@ -76,8 +90,12 @@ def extract_ips(fname, pattern=_IP_PATTERN, limit=10):
                     return
 
 
-def main(ip_filename=_IP_FILE):
-    for ip in extract_ips(ip_filename, limit=100):
+def main(filename=_IP_FILE, limit=10):
+    """Main function that parses `limit` IP addresses from `filename`. 
+
+    Prints output
+    """
+    for ip in extract_ips(filename, limit=limit):
         print(f"Found IP: {ip}")
     return 0
 
@@ -85,6 +103,13 @@ def main(ip_filename=_IP_FILE):
 #                             Runtime Execution
 # ----------*----------*----------*----------*----------*----------*----------*
 if __name__ == '__main__':
+    parser   = argparse.ArgumentParser(description='Parse IP addresses from file', 
+                    epilog='Example of use: python ipparser.py list_of_ips.txt --limit=5')
+    parser.add_argument('filename')
+    parser.add_argument('--limit', nargs='?', default=10, help="Limit to number of IPs parsed from file")
+    args = parser.parse_args()
+    filename = args.filename
+    limit = int(args.limit)
     logger.debug("Running main ipparser.py application")
-    status = main()
+    status = main(filename=filename, limit=limit)
     sys.exit(status)

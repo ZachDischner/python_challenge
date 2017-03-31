@@ -60,10 +60,8 @@ def ipsearch(searchstring, pattern=_IP_PATTERN):
     """
     matches = [match.group() for match in re.finditer(pattern, searchstring)]
     if matches:
-        logger.debug(f"Found {len(matches)} IP addresses in string '{searchstring}")
+        logger.debug(f"Found {len(matches)} IP addresses in string '{searchstring}'")
     return matches
-
-
 
 def extract_ips(fname, pattern=_IP_PATTERN, limit=10):
     extracted = 0
@@ -73,7 +71,7 @@ def extract_ips(fname, pattern=_IP_PATTERN, limit=10):
             for match in matches:
                 extracted += 1
                 yield match
-                if extracted > limit:
+                if extracted >= limit:
                     logger.debug(f"Maximum parsing limit of {limit} reached.\nStopping parsing of {fname} for IP addresses early")
                     return
 

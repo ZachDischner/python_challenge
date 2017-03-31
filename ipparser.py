@@ -11,20 +11,15 @@ __email__ = "zach.dischner@gmail.com"
 __status__ = "Dev"
 __doc__ = """
 File name: ipparser.py
-Created:
-Modified:
+Created: Mar 29 2017
+Modified: Mar 30 2017
 
 Summary:
-    STATUS IN WORK - Not complete or fully tested yet. 
-
-
-Details:
+    Simple module to parse IPV4 IP addresses from a file. 
 
 Examples:
-
-Nomenclature:
-
-TODO/Improvements:
+    ## Module Callable
+    python ipparser.py list_of_ips.txt --limit 5
 
 """
 

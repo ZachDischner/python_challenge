@@ -48,7 +48,9 @@ Examples:
     ones = ipmeta.filter_mentions(1)      # Returns a subset where metadata has a '1' in it, anywhere. 
     my_network = ipmeta.filter_mentions('192.168.2')  # Maybe your network all starts with 192.168
 
-
+    ###### You can also call this module to filter key-value pairs of a JSON file, and save the results to 
+    # a new file. 
+    python ipfilter.py IPDB.json "country_code" "United States" --output="subset.json"
 TODO/Improvements:
     * Rework the IPMeta so that it would be able to work with just one metadata type (RDAP/GEO) 
     or both. Best would be if we had an object to do filtering on any 
@@ -264,7 +266,7 @@ class IPMeta(object):
 ##############################################################################
 #                             Runtime Execution
 #----------*----------*----------*----------*----------*----------*----------*
-def main(filename, filter_key, filter_value, output=None):
+def main(filename, filter_key, filter_value, output=None, printout=False):
     logger.info(f"Loading {filename} for filtering where metadata's '{filter_key}' == {filter_value}")
     data = load_datastore(filename)
     
@@ -279,7 +281,8 @@ def main(filename, filter_key, filter_value, output=None):
         output = filename + ".filtered"
     
     filtered.dump_json(output)
-
+    if printout:
+        print(json.dumps(filtered.content, indent=2))
     return filtered
 
 
@@ -290,10 +293,12 @@ if __name__ == '__main__':
     parser.add_argument('filter_key', help="Filtering Key that you are looking for")
     parser.add_argument('filter_value', help="Value that you want filter_key to take on in either RDAP or GEO IP metadata")
     parser.add_argument('--output', nargs='?', default=None, help="Output filename to store filtered IP address metadata to")
+    parser.add_argument('--printout', nargs='?', default=False, help="Print output to screen")
     args = parser.parse_args()
     filename = args.input
     output = args.output
+    printout = args.printout
     filter_key = args.filter_key
     filter_value = args.filter_value
-    status = main(filename, filter_key, filter_value, output=output)
+    status = main(filename, filter_key, filter_value, output=output, printout=printout)
     sys.exit(status)

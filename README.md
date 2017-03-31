@@ -119,3 +119,40 @@ my_network = ipmeta.filter_mentions('192.168.2')  # Maybe your network all start
     The filter component should provide a custom query language allowing the user to easily filter results based on
     Do not use 3rd party packages that provide complete solutions for GeoIP queries, RDAP queries, or filtering. Libraries simplifying HTTP requests, data manipulation, etc. are acceptable.
     Bonus points for simple, clever, and performant solutions, and any extras like unit tests, docs, multiple output formats, result caching, web UI, cli, etc. Be creative.
+    
+**File structure**
+
+5000 IP addresses interspersed in a text file like:
+
+```
+Lorem ipsum dolor sit amet, 244.36.171.60 adipiscing elit. Pellentesque finibus massa vitae augue 81.44.150.240, vitae faucibus quam pellentesque. Aenean condimentum risus at justo suscipit bibendum. Curabitur consequat tempus bibendum. Vestibulum bibendum sagittis odio, in fermentum velit auctor eget. Etiam mollis aliquet semper. Sed id turpis ac nulla congue rhoncus. 40.82.106.5 facilisis sem augue, sit amet consequat lacus pellentesque sed. Fusce non posuere ligula. Praesent nec lorem nisl. Integer suscipit efficitur nibh consectetur malesuada.
+
+Aliquam porta ullamcorper lorem, non 216.235.211.155 erat scelerisque eget. 116.101.14.224 finibus eu leo vitae 34.142.6.33. Fusce eu arcu eu metus dignissim hendrerit a in eros. Aenean elementum, mi id interdum hendrerit, odio erat dapibus nisl, sit amet feugiat purus massa ut eros. Duis lacus velit, facilisis ut dignissim vel, tempus id turpis. Vivamus laoreet sollicitudin metus vitae consequat. Praesent sapien massa, fringilla tempus finibus et, dapibus sit amet risus. Fusce in rhoncus tellus.
+
+Praesent in tincidunt 33.33.53.155. In in vehicula est, nec finibus urna. Nulla 186.167.42.67 arcu, bibendum quis erat in, viverra sodales erat. Vestibulum non scelerisque nibh, a viverra quam. Proin vitae odio ac leo dignissim mollis auctor ac libero. Cras sollicitudin lobortis risus eget aliquet. Morbi mattis id felis sed molestie. Praesent semper tellus a est ornare vulputate. Suspendisse rhoncus neque purus, non ornare sem pellentesque maximus.
+
+236.220.190.72
+208.128.240.230
+123.42.170.221
+
+224.171.234.30
+3.173.155.119
+40.43.195.14
+232.125.33.216
+
+31.57.136.230
+222.5.172.196
+33.238.19.104
+142.254.194.243
+124.86.226.223
+
+Etiam quis 13.211.237.22 eros. Donec massa nunc, 4.44.97.176 vel ligula ut, dapibus 203.35.56.248 eros. Pellentesque malesuada nisi 24.197.112.182, a malesuada mi feugiat vitae. Nulla vitae ante at odio imperdiet varius 107.73.246.73 in justo. Sed nisi leo, venenatis vitae lorem et, porta eleifend arcu. Fusce ornare tempor lacinia. Vestibulum at diam eu libero lobortis pulvinar a non ex. 108.65.14.158 a neque ullamcorper, lacinia odio in, mattis est. Integer rhoncus neque sit amet lorem pulvinar, at pretium libero venenatis. Aenean tristique semper hendrerit. Praesent molestie mauris sed justo bibendum facilisis. Proin lorem magna, rutrum vel finibus eget, eleifend vel dui. 72.240.178.112 Donec fringilla nisi et erat iaculis rhoncus sed a nibh. Mauris semper 59.219.223.23 vel interdum vulputate. Mauris ut rhoncus nunc. Cras nec lectus eget lectus pretium tincidunt. Pellentesque magna ex, maximus sed imperdiet nec, molestie in sem. Ut efficitur 61.66.194.204 et porta mollis. Donec eu ex in purus tincidunt suscipit. 159.129.75.124 interdum velit velit, quis aliquam ante malesuada aliquet. Nunc ante enim, lobortis nec aliquet nec, vulputate vitae 227.73.226.94. Vivamus dapibus imperdiet augue, nec sagittis tellus lobortis vitae. Quisque ligula elit, 99.174.36.137 vitae justo vitae, porttitor malesuada 23.5.102.194.
+
+41.107.216.31
+136.17.123.206
+54.153.173.116
+184.159.117.150
+221.88.104.235
+14.187.35.51
+...
+```

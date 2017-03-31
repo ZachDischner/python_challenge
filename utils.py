@@ -33,7 +33,6 @@ TODO/Improvements:
 import logging
 import os
 import sys
-import pickle
 import json
 from collections import defaultdict
 import numpy as np
@@ -60,9 +59,12 @@ def _load_ip_db():
     """
     if os.path.exists(_DB_LOC):
         logger.info(f"Loading serialized ip database from {_DB_LOC}")
-        with open(_DB_LOC, 'rb') as dbfile:
-            # return pickle.load(dbfile)
-            return json.load(dbfile)
+        try:
+            with open(_DB_LOC, 'rb') as dbfile:
+                return json.load(dbfile)
+        except:
+            logger.error(f"Problem loading IP metadata file from disk {_DB_LOC}. Starting with fresh clean metadata database instead")
+            return defaultdict(dict)
     else:
         logger.info("No ip 'database' exists. Starting with a clean fresh one")
         return defaultdict(dict)
@@ -76,8 +78,7 @@ def get_ip_db(reload=False):
 def store_ip_db(db):
     logger.info(f"Saving ip database to file {_DB_LOC}. Database has {len(db)} entries in it")
     with open(_DB_LOC, 'w') as dbfile:
-        # pickle.dump(db, dbfile)
-        json.dump(db, dbfile, indend=2)
+        json.dump(db, dbfile, indent=2)
 
 
 def condition_rdap(rdap, ip):
@@ -161,7 +162,8 @@ class IPDB(object):
         """
             
         if IPDB.DB.get(ip) is None:
-            IPDB.DB['ip'] = {"GEO":{}, "RDAP":{}}
+            IPDB.DB[ip] = {"GEO":{}, "RDAP":{}}
+
         if rdap is not None:
             logger.debug(f"Updating {ip} RDAP info in database")
             condition_rdap(rdap, ip)

@@ -1,3 +1,6 @@
+# Cached ip address datastore
+IPDB.pickle*
+
 # Mac
 .DS_Store
 

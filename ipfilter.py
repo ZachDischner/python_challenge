@@ -35,6 +35,7 @@ import os
 import sys
 import utils
 import pandas as pd
+import json
 
 ###### Module Wide Objects
 _here = os.path.dirname(os.path.realpath(__file__))
@@ -44,6 +45,11 @@ logger = utils.logger
 ##############################################################################
 #                                   Functions
 #----------*----------*----------*----------*----------*----------*----------*
+def load_datastore(filename):
+    with open(filename, 'rb') as fp:
+        data = json.load(fp)
+    return data
+
 def process_datastore(data):
     """Convert a store of ip metadata into a queryable dataframe
     
@@ -67,15 +73,18 @@ def process_datastore(data):
     return df_geo, df_rdap
 
 
+##############################################################################
+#                                 Classes
+#----------*----------*----------*----------*----------*----------*----------*
 class IPFilterer(object):
     """
     Queries will be ran against GEO information first, then RDAP info second.
     """
     @property
     def content(self):
-        return self.to_json()
+        return self.to_dict()
 
-    def __init__(self, data=None, df_geo=None, df_rdap=None):
+    def __init__(self, data=None, filename=None, df_geo=None, df_rdap=None):
         """Class to help search/filter out GEO and RDAP IP address information
         
         Must either provide a raw datastore, or specific dataframes filled with
@@ -83,13 +92,15 @@ class IPFilterer(object):
         """
         if data:
             df_geo, df_rdap = process_datastore(data)
+        elif filename:
+            df_geo, df_rdap = process_datastore(load_datastore(filename))
         
         ## Internally stored DataFrames of ip address metadata
         self.df_geo = df_geo
         self.df_rdap = df_rdap
 
         ## Handy attribute, store searchable keys
-        self.searchable = sorted(unique(list(self.df_rdap.keys()) + list(self.df_geo.keys())))
+        self.searchable = sorted(pd.np.unique(list(self.df_rdap.keys()) + list(self.df_geo.keys())))
     
     def __repr__(self):
         return f"Filterable IP dataset with {len(self.df_geo)} addresses in it"
@@ -152,10 +163,43 @@ class IPFilterer(object):
 
 
 
-###############################################################################
+##############################################################################
 #                             Runtime Execution
 #----------*----------*----------*----------*----------*----------*----------*
+def main(filename, filter_key, filter_value, output=None):
+    logger.info(f"Loading {filename} for filtering where metadata's '{filter_key}' == {filter_value}")
+    data = load_datastore(filename)
+    
+    ipf = IPFilterer(data=data)
+
+    filtered = ipf.filter(filter_key, filter_value)
+
+    logger.info(f"After filtering, metadata went from {len(data)} to {len(filtered.content)} items")
+
+    ###### Store results to file
+    if output is None:
+        output = filename + ".filtered"
+    
+    with open(output,'w') as fp:
+        json.dump(filtered.content, fp, indent=2, cls=utils.MyEncoder)
+    logger.info(f"Stored filtered IP address metadata to {output}")
+
+    return filtered
+
+
 if __name__ == '__main__':
-    logger.debug("Running main ipfilter.py application")
-    status = main()
+    parser   = argparse.ArgumentParser(description='Filter a file of stored IP GEO/RDAP JSON metadata', 
+                    epilog='Example of use: python ipfilter.py IPdata.json filter_key="country code" filter-value="United States"')
+    parser.add_argument('input', help="Filename of stored JSON metadata")
+    parser.add_argument('filter_key', help="Filtering Key that you are looking for")
+    parser.add_argument('filter_value', help="Value that you want filter_key to take on in either RDAP or GEO IP metadata")
+    parser.add_argument('--output', nargs='?', default=None, help="Output filename to store filtered IP address metadata to")
+    parser.add_argument('--limit', nargs='?', default=10, help="Limit to number of IPs parsed from file")
+    args = parser.parse_args()
+    filename = args.input
+    output = args.output
+    filter_key = args.filter_key
+    filter_value = args.filter_value
+    limit = int(args.limit)
+    status = main(filename, filter_key, filter_value, output=output)
     sys.exit(status)

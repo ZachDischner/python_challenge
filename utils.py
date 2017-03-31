@@ -37,6 +37,7 @@ import sys
 import pickle
 import json
 from collections import defaultdict
+import numpy as np
 
 log_level = logging.DEBUG
 logging.basicConfig(stream=sys.stdout, level=log_level)
@@ -49,6 +50,9 @@ _DB = None # Global database dictionary
 ###############################################################################
 #                                   Functions
 # ----------*----------*----------*----------*----------*----------*----------*
+def to_json(data):
+    return json.dumps(data, cls=MyEncoder)
+
 def _load_ip_db():
     """Loads a 'database' of stored IP information from a JSON file
 
@@ -74,7 +78,7 @@ def store_ip_db(db):
     logger.info(f"Saving ip database to file {_DB_LOC}. Database has {len(db)} entries in it")
     with open(_DB_LOC, 'w') as dbfile:
         # pickle.dump(db, dbfile)
-        json.dump(db, dbfile)
+        json.dump(db, dbfile, indend=2)
 
 
 def condition_rdap(rdap, ip):
@@ -95,6 +99,21 @@ def condition_geo(rdap):
 ###############################################################################
 #                                   Classes
 # ----------*----------*----------*----------*----------*----------*----------*
+class MyEncoder(json.JSONEncoder):
+    """Thank you SO! In Python3/numpy, sometimes numbers are stored as or masquerade as
+    simple types when really they are big ones that JSON can't serialize. So here's a nice
+    encoder for those cases
+    """
+    def default(self, obj):
+        if isinstance(obj, np.integer):
+            return int(obj)
+        elif isinstance(obj, np.floating):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        else:
+            return super(MyEncoder, self).default(obj)
+
 class IPDB(object):
     """Super basic in memory database of ip information.
 

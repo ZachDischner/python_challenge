@@ -44,7 +44,7 @@ logger = utils.logger
 _APIs = {"RDAP": "https://rdap.arin.net/bootstrap/ip/{ip}",
          "GEO": "http://freegeoip.net/json/{ip}"}
 
-db = utils.ipdb()
+db = utils.IPDB()
 
 ##############################################################################
 #                                   Functions
@@ -61,7 +61,7 @@ def query_url(ip:str, kind:str) -> dict:
     logger.warning(f"Error getting {kind} info for ip address: '{ip}'. Reason: '{resp.reason}'")
 
 def fetch_RDAP(ip:str) ->dict:
-    return query_url(ip, "GEO")
+    return query_url(ip, "RDAP")
 
 def fetch_GEO(ip:str) -> dict:
     return query_url(ip, "GEO")

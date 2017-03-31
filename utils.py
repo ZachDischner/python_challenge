@@ -50,10 +50,10 @@ _DB = None # Global database dictionary
 #                                   Functions
 # ----------*----------*----------*----------*----------*----------*----------*
 def _load_ip_db():
-    """Returns faux database of ip information
+    """Loads a 'database' of stored IP information from a JSON file
 
-    'Database' is just a dictionary of the form: {ip_address: {"GEO":geo_json, "RDAP":rdap_json}}. 
-    It is stored as a pickle file. If it doesn't exist, an empty dictionary is returned.
+    The 'Database' is just a dictionary of the form: {ip_address: {"GEO":geo_json, "RDAP":rdap_json}}. 
+    It is stored as a JSON file. If it doesn't exist, an empty dictionary is returned.
     """
     if os.path.exists(_DB_LOC):
         logger.info(f"Loading serialized ip database from {_DB_LOC}")
@@ -95,7 +95,7 @@ def condition_geo(rdap):
 ###############################################################################
 #                                   Classes
 # ----------*----------*----------*----------*----------*----------*----------*
-class ipdb(object):
+class IPDB(object):
     """Super basic in memory database of ip information.
 
     ipdb() objects basically wrap access to a dictionary of stored ip:{RDAP, GEO} information.
@@ -103,27 +103,48 @@ class ipdb(object):
     The data is all stored in-memory until the `commit()` function is called, at which point
     data is saved to disk. Instantiating this object will either provide reference
     """
-    def __init__(self):
-        self.db = get_ip_db()
+    ## Class variable which stands as the database accessor (dictionary)
+    DB = None
 
+    def __init__(self, reload=False):
+        if reload or type(self).DB is None:
+            type(self).DB = get_ip_db(reload=reload)
+        else:
+            logger.debug("Database already loaded, using existing reference.")
+
+        # self.db = get_ip_db(reload=reload)
+        self.committed = reload
+    
+    def __repr__(self):
+        rep = f"IP info database. Contains {len(IPDB.DB)} entries. "
+        if self.committed:
+            rep += "All changes are committed to disk"
+        else:
+            rep += "DB updates have been staged, run 'commit()' to store changes"
+        return rep
+    
     def update(self, ip, rdap=None, geo=None):
         if rdap is not None:
             logger.debug(f"Updating {ip} RDAP info in database")
             condition_rdap(rdap, ip)
-            self.db[ip]["RDAP"] = rdap
+            IPDB.DB[ip]["RDAP"] = rdap
+            self.committed = False
 
         if geo is not None:
             logger.debug(f"Updating {ip} GEO info in database")
             condition_geo(geo)
-            self.db[ip]["GEO"] = geo
+            IPDB.DB[ip]["GEO"] = geo
+            self.committed = False
 
     def drop(self,ip):
         logger.debug(f"Dropping {ip} info from database")
-        self.db.pop(ip)
+        IPDB.DB.pop(ip)
+        self.committed = False
 
     def commit(self):
         logger.debug("Storing database information to disk")
-        store_ip_db(self.db)
+        store_ip_db(IPDB.DB)
+        self.committed = True
     
     def reload(self):
         self.db = get_ip_db(reload=True)

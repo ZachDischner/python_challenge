@@ -54,7 +54,8 @@ def main(filename, limit, store=True):
 
     if store:
         print("Saving ip database to disk")
-        db = utils.ipdb()
+        ## Get access to in-memory datastore of IP metadata
+        db = utils.IPDB()
         db.commit()
     return 0
 
@@ -63,7 +64,7 @@ if __name__ == "__main__":
                     epilog='Example of use: python IPDetective list_of_ips.txt --limit=5 store=True')
     parser.add_argument('filename')
     parser.add_argument('--limit', nargs='?', default=10, help="Limit to number of IPs parsed from file")
-    parser.add_argument('--store', nargs='?', default=True, help="Limit to number of IPs parsed from file")
+    parser.add_argument('--store', nargs='?', default=True, help="Save results to disk? (JSON file)")
     args = parser.parse_args()
     filename = args.filename
     limit = int(args.limit)

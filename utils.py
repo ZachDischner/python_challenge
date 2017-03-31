@@ -17,14 +17,13 @@ Modified:
 Summary:
     Simple module to provide centerpoint definitions for various other modules
 
-
 Details:
-
-Examples:
-
-Nomenclature:
+    Main component here is the `IPDB` class which provides a simplified way to store
+    IP address metadata content in an in-memory dictionary and to the disk as a JSON file. 
 
 TODO/Improvements:
+    A rework to use the `IPDB` class as a decision point WRT whether or not we need to 
+    query the net for metadata would be cool. So far, it is a recieve-only storage interface. 
 
 """
 
@@ -117,15 +116,20 @@ class MyEncoder(json.JSONEncoder):
 class IPDB(object):
     """Super basic in memory database of ip information.
 
-    ipdb() objects basically wrap access to a dictionary of stored ip:{RDAP, GEO} information.
+    IPDB() objects basically wrap access to a dictionary of stored {ip:{RDAP, GEO}} information.
 
     The data is all stored in-memory until the `commit()` function is called, at which point
-    data is saved to disk. Instantiating this object will either provide reference
+    data is saved to disk to a JSON file.
     """
     ## Class variable which stands as the database accessor (dictionary)
     DB = None
 
     def __init__(self, reload=False):
+        """Instantiate. Access to 'database' is either to the in-memory dictionary or loaded from disk
+
+        Kwargs:
+            reload:     Force reload from disk. In-memory DB modifications will be lost!
+        """
         if reload or type(self).DB is None:
             type(self).DB = get_ip_db(reload=reload)
         else:
@@ -143,6 +147,21 @@ class IPDB(object):
         return rep
     
     def update(self, ip, rdap=None, geo=None):
+        """Update the database with new RDAP and/or GEO metadata for a given ip ip_address
+
+        Args:
+            ip:     String IP address
+        
+        Kwargs:
+            rdap:   Dictionary of RDAP metadata. (hint, fetched from:  "https://rdap.arin.net/bootstrap/ip/{ip}")
+            geo:    Dictionary of GEO metadata. (hint, fetched from:  "http://freegeoip.net/json/{ip}")
+        
+        Examples:
+            ipdb.update("192.168.2.11", rdap=requests.get("https://rdap.arin.net/bootstrap/ip/192.168.2.11").json())
+        """
+            
+        if IPDB.DB.get(ip) is None:
+            IPDB.DB['ip'] = {"GEO":{}, "RDAP":{}}
         if rdap is not None:
             logger.debug(f"Updating {ip} RDAP info in database")
             condition_rdap(rdap, ip)
@@ -156,17 +175,16 @@ class IPDB(object):
             self.committed = False
 
     def drop(self,ip):
+        """Pops an IP address and associated meta from the database"""
         logger.debug(f"Dropping {ip} info from database")
         IPDB.DB.pop(ip)
         self.committed = False
 
     def commit(self):
+        """Stores in-memory dictionary of metadata to the disk as a JSON file"""
         logger.debug("Storing database information to disk")
         store_ip_db(IPDB.DB)
         self.committed = True
-    
-    def reload(self):
-        self.db = get_ip_db(reload=True)
 
 
     

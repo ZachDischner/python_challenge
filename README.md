@@ -1,6 +1,10 @@
 # IPDetective 
 Zach Dischner - March 31 2017
 
+Clone with `git clone git@github.com:ZachDischner/swimlane_challenge.git IPDetective`
+
+Make sure your environment is up-to-snuff as described by `environment.yaml`
+
 ## Overview
 IPDetective is a collection of modules that provides basic utilities for parsing IP addresses from a file, fetching GEO/RDAP metadata for addresses, and filtering down a collection of IPs and associated metadata. The overall approach is as follows:
 

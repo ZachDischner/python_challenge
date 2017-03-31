@@ -11,8 +11,8 @@ __email__ = "zach.dischner@gmail.com"
 __status__ = "Dev"
 __doc__ = """
 File name: ipfilter.py
-Created:
-Modified:
+Created: Mar 30 2017
+Modified: Mar 31 2017
 
 Summary:
     Simple module to help you load, filter, and store collections of IP metadata. 
@@ -51,6 +51,7 @@ Examples:
     ###### You can also call this module to filter key-value pairs of a JSON file, and save the results to 
     # a new file. 
     python ipfilter.py IPDB.json "country_code" "United States" --output="subset.json"
+
 TODO/Improvements:
     * Rework the IPMeta so that it would be able to work with just one metadata type (RDAP/GEO) 
     or both. Best would be if we had an object to do filtering on any 

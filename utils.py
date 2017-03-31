@@ -11,8 +11,8 @@ __email__ = "zach.dischner@gmail.com"
 __status__ = "Dev"
 __doc__ = """
 File name: utils.py
-Created:
-Modified:
+Created: Mar 29 2017
+Modified: Mar 31 2017
 
 Summary:
     Simple module to provide centerpoint definitions for various other modules

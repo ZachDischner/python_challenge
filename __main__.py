@@ -11,12 +11,12 @@ __email__ = "zach.dischner@gmail.com"
 __status__ = "Dev"
 __doc__ = """
 File name: utils.py
-Created:
-Modified:
+Created: Mar 29 2017
+Modified: Mar 31 2017
 
 Summary:
     Main function to parse file of IP addresses, look up GEO/RDAP information, 
-    and store in a pickled 'database'
+    and store in a JSON 'database'
 
 
 Details:

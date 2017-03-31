@@ -1,0 +1,11 @@
+name: ipdetective
+
+dependencies:
+  - python=3.6
+  - pytest
+  - setuptools
+  - json
+  - pandas
+  - numpy
+  - requests
+  - argparse
